@@ -1422,5 +1422,125 @@
         };
 
     </script>
+    <!-- Custom Feature Modules CSS -->
+<link rel="stylesheet" href="omni-storm-center.css">
+<link rel="stylesheet" href="omni-space-weather.css">
+    <!-- New Feature Triggers -->
+<button onclick="OmniStormCenter.toggleDrawer()" class="px-3 py-2 bg-red-900/40 hover:bg-red-800/60 border border-red-500/50 rounded-lg transition-all text-sm flex items-center gap-2 text-red-300 font-medium shadow-lg shadow-red-950/40" title="Severe Weather Center">
+    <i class="fa-solid fa-tornado animate-spin-slow"></i> Storm Center
+    <span id="storm-active-badge" class="hidden w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+</button>
+
+<button onclick="OmniSpaceWeather.toggleModal()" class="px-3 py-2 bg-purple-900/40 hover:bg-purple-800/60 border border-purple-500/50 rounded-lg transition-all text-sm flex items-center gap-2 text-purple-300 font-medium" title="Space Weather & Aurora">
+    <i class="fa-solid fa-solar-panel text-yellow-400"></i> Aurora / Space
+</button>
+
+<div class="h-6 w-px bg-gray-600 mx-1 hidden xl:block"></div>
+    <!-- Space Weather Mini-Widget -->
+<div id="space-weather-widget" class="glass-card p-5 aurora-card-border cursor-pointer transition-all hover:scale-[1.01]" onclick="OmniSpaceWeather.toggleModal()">
+    <div class="flex items-center justify-between mb-3 border-b border-gray-700/60 pb-2">
+        <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2 text-purple-300">
+            <i class="fa-solid fa-atom animate-pulse text-yellow-400"></i> Space Weather
+        </h3>
+        <span id="kp-badge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/40">Kp: --</span>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="bg-gray-800/60 p-2.5 rounded-lg border border-gray-700/50">
+            <span class="text-gray-400 text-[10px] block uppercase">Aurora Chance</span>
+            <span id="aurora-probability" class="text-base font-bold text-emerald-400">--%</span>
+        </div>
+        <div class="bg-gray-800/60 p-2.5 rounded-lg border border-gray-700/50">
+            <span class="text-gray-400 text-[10px] block uppercase">Solar Wind</span>
+            <span id="solar-wind-speed" class="text-base font-bold text-amber-300">-- km/s</span>
+        </div>
+    </div>
+</div>
+    <!-- Severe Storm Center Drawer -->
+<div id="storm-drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] hidden opacity-0 transition-opacity duration-300" onclick="OmniStormCenter.toggleDrawer(false)"></div>
+<aside id="storm-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-gray-900 border-l border-red-500/30 z-[160] shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-4 border-b border-gray-800 flex items-center justify-between bg-red-950/30">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-tower-broadcast text-red-400 text-lg animate-pulse"></i>
+            <h3 class="font-bold text-red-300 uppercase tracking-wider text-sm">Severe Storm & Hazard Hub</h3>
+        </div>
+        <button onclick="OmniStormCenter.toggleDrawer(false)" class="text-gray-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+    </div>
+    
+    <div class="p-4 flex-1 overflow-y-auto space-y-4">
+        <!-- Live Cell Tracker Map Control -->
+        <div class="bg-gray-800/60 p-3 rounded-xl border border-gray-700">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-semibold text-gray-300">Storm Cell Tracking Mode</span>
+                <span id="storm-mode-status" class="text-[10px] bg-red-500/20 text-red-300 border border-red-500/40 px-2 py-0.5 rounded">STANDBY</span>
+            </div>
+            <p class="text-xs text-gray-400 mb-3">Simulates convective storm motion and convective available potential energy (CAPE) vectors relative to coordinates.</p>
+            <button onclick="OmniStormCenter.scanLocalCells()" class="w-full py-2 bg-red-600/80 hover:bg-red-600 text-white font-semibold rounded-lg text-xs transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-radar"></i> Run High-Resolution Cell Scan
+            </button>
+        </div>
+
+        <!-- Hazard Log -->
+        <div id="storm-hazard-list" class="space-y-2">
+            <!-- Populated dynamically -->
+        </div>
+    </div>
+    
+    <div class="p-4 border-t border-gray-800 bg-gray-950/60 text-[10px] text-gray-500 flex justify-between items-center">
+        <span>NWS & EUMETSAT Hazard Data Link</span>
+        <button onclick="OmniStormCenter.testSiren()" class="text-red-400 hover:underline">Test Audio Alert</button>
+    </div>
+</aside>
+
+<!-- Space Weather & Aurora Modal -->
+<div id="space-modal-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[150] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full border border-purple-500/40 overflow-hidden shadow-2xl">
+        <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-purple-950/20">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-sun text-2xl text-yellow-400"></i>
+                <div>
+                    <h3 class="font-bold text-white text-base">Space Weather & Aurora Observatory</h3>
+                    <p class="text-xs text-purple-300">Real-Time Solar Wind & Magnetosphere Analytics</p>
+                </div>
+            </div>
+            <button onclick="OmniSpaceWeather.toggleModal(false)" class="text-gray-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-800/60 p-4 rounded-xl border border-gray-700/60 text-center">
+                    <div class="text-xs text-gray-400 uppercase">Geomagnetic Kp Index</div>
+                    <div id="modal-kp-val" class="text-3xl font-bold text-purple-400 mt-1">--</div>
+                    <div id="modal-kp-label" class="text-xs text-gray-400 mt-1">Quiet</div>
+                </div>
+                <div class="bg-gray-800/60 p-4 rounded-xl border border-gray-700/60 text-center">
+                    <div class="text-xs text-gray-400 uppercase">Aurora Sight Probability</div>
+                    <div id="modal-aurora-val" class="text-3xl font-bold text-emerald-400 mt-1">--%</div>
+                    <div class="text-xs text-gray-400 mt-1">Based on Latitude</div>
+                </div>
+                <div class="bg-gray-800/60 p-4 rounded-xl border border-gray-700/60 text-center">
+                    <div class="text-xs text-gray-400 uppercase">Solar Wind Density</div>
+                    <div id="modal-density-val" class="text-3xl font-bold text-amber-300 mt-1">--</div>
+                    <div class="text-xs text-gray-400 mt-1">protons / cm³</div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900/80 p-4 rounded-xl border border-purple-500/20 space-y-2">
+                <h4 class="text-xs font-bold text-purple-300 uppercase tracking-wider">Magnetospheric Activity Forecast</h4>
+                <p id="space-weather-briefing" class="text-sm text-gray-300 leading-relaxed">
+                    Loading magnetosphere planetary telemetry...
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Connect Script Modules at the end of body -->
+<script src="omni-storm-center.js"></script>
+<script src="omni-space-weather.js"></script>
 </body>
 </html>

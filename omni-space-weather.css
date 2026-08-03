@@ -1,0 +1,28 @@
+/* ==========================================================================
+   OmniWeather - Space Weather & Aurora Observatory Styles
+   ========================================================================== */
+
+@keyframes auroraGlow {
+    0% {
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.15), inset 0 0 15px rgba(16, 185, 129, 0.05);
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(168, 85, 247, 0.25), inset 0 0 20px rgba(168, 85, 247, 0.1);
+        border-color: rgba(168, 85, 247, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.15), inset 0 0 15px rgba(16, 185, 129, 0.05);
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+}
+
+.aurora-card-border {
+    animation: auroraGlow 6s ease-in-out infinite;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.95) 100%);
+}
+
+#space-modal-overlay {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}

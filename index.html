@@ -2319,5 +2319,68 @@
         };
     }
 </script>
+    <!-- ================================================================= -->
+<!--           OMNIWEATHER GLOBAL METRIC OVERRIDE SCRIPT               -->
+<!-- ================================================================= -->
+<script>
+    (function forceMetricSystem() {
+        console.log("OmniWeather: Global Metric Override Initialized");
+
+        // 1. API Interceptor: Strip out imperial flags from network requests
+        const originalFetch = window.fetch;
+        window.fetch = async function(...args) {
+            let [resource, config] = args;
+            
+            // If fetching from Open-Meteo, ensure we default to metric (Celsius, km/h, mm)
+            if (typeof resource === 'string' && resource.includes('api.open-meteo.com')) {
+                resource = resource
+                    .replace(/&temperature_unit=fahrenheit/gi, '')
+                    .replace(/&wind_speed_unit=mph/gi, '')
+                    .replace(/&windspeed_unit=mph/gi, '')
+                    .replace(/&precipitation_unit=inch/gi, '');
+            }
+            return originalFetch(resource, config);
+        };
+
+        // 2. DOM Observer: Clean up any hardcoded imperial labels on the fly
+        function convertLabels(node) {
+            if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim() !== '') {
+                if (/°F|mph|inch/i.test(node.nodeValue)) {
+                    node.nodeValue = node.nodeValue
+                        .replace(/°F/g, '°C')
+                        .replace(/mph/g, 'km/h')
+                        .replace(/inches/g, 'mm')
+                        .replace(/inch/g, 'mm');
+                }
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                node.childNodes.forEach(convertLabels);
+            }
+        }
+
+        // Run immediately on existing elements
+        convertLabels(document.body);
+
+        // Watch for dynamic dashboard updates and clean labels automatically
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    convertLabels(node);
+                });
+            });
+        });
+
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true 
+        });
+        
+        // Force a data refresh to pull the new metric numbers if the app is already loaded
+        window.addEventListener('load', () => {
+            if (typeof window.fetchAllData === 'function') {
+                window.fetchAllData();
+            }
+        });
+    })();
+</script>
 </body>
 </html>
